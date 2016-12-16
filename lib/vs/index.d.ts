@@ -1521,6 +1521,8 @@ declare namespace __vis {
       fixed?: boolean;
       image?: string;
       shape?: string;
+      color?: string;
+      size?: number;
       title?: string;
       cid?: IdType;
       group?: IdType;
