@@ -923,4 +923,24 @@ export class VisNetworkService {
 
     return -1;
   }
+
+/**
+ * This function converts canvas coordinates to coordinates on the DOM. 
+ * Input and output are in the form of {x:Number,y:Number}. 
+ * The DOM values are relative to the network container.
+ */
+  public canvasToDOM(visNetwork: string,position: __vis.IPosition) {
+          return this.networks[visNetwork].canvasToDOM(position);
+  }
+
+/**
+ * This function converts DOM coordinates to coordinates on the canvas. 
+ * Input and output are in the form of {x:Number,y:Number}. 
+ * The DOM values are relative to the network container.
+ */
+    public DOMtoCanvas(visNetwork: string,position: __vis.IPosition) {
+          return this.networks[visNetwork].DOMtoCanvas(position);
+  }
+
+
 }
