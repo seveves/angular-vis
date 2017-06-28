@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "vis": "4.17.0",
-    "@types/vis": "4.17.4"
+    "@types/vis": "^4.17.4"
   },
   "peerDependencies": {
     "@angular/common": "^2.4.10",
