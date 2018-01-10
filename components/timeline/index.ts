@@ -173,7 +173,7 @@ export interface VisItemSelectionOptions extends Vis.DataSelectionOptions<VisTim
 export interface VisGroupSelectionOptions extends Vis.DataSelectionOptions<VisTimelineGroup> {}
 export type VisDate = Vis.DateType;
 export type VisTimelineEvents = Vis.TimelineEvents;
-export interface VisTimelineFitOptions extends Vis.TimelineFitOptions {}
+export interface VisTimelineAnimationOptions extends Vis.TimelineAnimationOptions {}
 export interface VisTimelineEventPropertiesResult extends  Vis.TimelineEventPropertiesResult {}
 
 export class VisTimeline extends Vis.Timeline {}

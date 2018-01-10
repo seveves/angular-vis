@@ -3,9 +3,9 @@ import {
     VisDate,
     VisId,
     VisTimeline,
+    VisTimelineAnimationOptions,
     VisTimelineEventPropertiesResult,
     VisTimelineEvents,
-    VisTimelineFitOptions,
     VisTimelineGroups,
     VisTimelineItems,
     VisTimelineOptions } from './index';
@@ -214,7 +214,7 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public fit(visTimeline: string, options?: VisTimelineFitOptions): void {
+    public fit(visTimeline: string, options?: VisTimelineAnimationOptions): void {
         if (this.timelines[visTimeline]) {
             this.timelines[visTimeline].fit(options);
         } else {
@@ -233,7 +233,7 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public focusOnId(visTimeline: string, id: VisId, options?: VisTimelineFitOptions): void {
+    public focusOnId(visTimeline: string, id: VisId, options?: VisTimelineAnimationOptions): void {
         if (this.timelines[visTimeline]) {
             this.timelines[visTimeline].focus(id, options);
         } else {
@@ -252,7 +252,7 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public focusOnIds(visTimeline: string, ids: VisId[], options?: VisTimelineFitOptions): void {
+    public focusOnIds(visTimeline: string, ids: VisId[], options?: VisTimelineAnimationOptions): void {
         if (this.timelines[visTimeline]) {
             this.timelines[visTimeline].focus(ids, options);
         } else {
@@ -401,7 +401,7 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public moveTo(visTimeline: string, time: VisDate, options?: VisTimelineFitOptions): void {
+    public moveTo(visTimeline: string, time: VisDate, options?: VisTimelineAnimationOptions): void {
         if (this.timelines[visTimeline]) {
             this.timelines[visTimeline].moveTo(time, options);
         } else {
@@ -642,7 +642,7 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public setWindow(visTimeline: string, start: VisDate, end: VisDate, options?: VisTimelineFitOptions): void {
+    public setWindow(visTimeline: string, start: VisDate, end: VisDate, options?: VisTimelineAnimationOptions): void {
         if (this.timelines[visTimeline]) {
             this.timelines[visTimeline].setWindow(start, end, options);
         } else {
