@@ -47,24 +47,24 @@
     "postversion": "git push origin master && git push --tags"
   },
   "dependencies": {
-    "vis": "4.17.0",
-    "@types/vis": "4.17.4"
+    "@types/vis": "^4.21.0",
+    "vis": "^4.21.0"
   },
   "peerDependencies": {
-    "@angular/common": "^2.4.10",
-    "@angular/core": "^2.4.10",
-    "@angular/compiler": "^2.4.10"
+    "@angular/common": "^5.2.0",
+    "@angular/core": "^5.2.0",
+    "@angular/compiler": "^5.2.0"
   },
   "devDependencies": {
-    "@angular/common": "^2.4.10",
-    "@angular/compiler": "^2.4.10",
-    "@angular/compiler-cli": "^2.4.10",
-    "@angular/core": "^2.4.10",
-    "@angular/forms": "^2.4.10",
-    "@angular/platform-browser": "^2.4.10",
-    "@angular/platform-browser-dynamic": "^2.4.10",
-    "@angular/platform-server": "^2.4.10",
-    "@angular/router": "^3.4.10",
+    "@angular/common": "^5.2.0",
+    "@angular/compiler": "^5.2.0",
+    "@angular/compiler-cli": "^5.2.0",
+    "@angular/core": "^5.2.0",
+    "@angular/forms": "^5.2.0",
+    "@angular/platform-browser": "^5.2.0",
+    "@angular/platform-browser-dynamic": "^5.2.0",
+    "@angular/platform-server": "^5.2.0",
+    "@angular/router": "^5.2.0",
     "@types/jasmine": "^2.5.46",
     "@types/node": "^7.0.8",
     "@types/webpack": "^2.2.11",
@@ -84,6 +84,7 @@
     "gulp": "3.9.1",
     "gulp-tslint": "^7.1.0",
     "html-loader": "^0.4.5",
+    "html-webpack-plugin": "^2.30.1",
     "istanbul-instrumenter-loader": "^2.0.0",
     "jasmine-core": "^2.5.2",
     "karma": "^1.5.0",
