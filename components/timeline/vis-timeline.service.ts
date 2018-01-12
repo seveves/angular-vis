@@ -203,6 +203,22 @@ export class VisTimelineService {
         }
     }
 
+    public zoomIn(visTimeline: string, zoomLevel: number, options?: VisTimelineOptions): void {
+        if (this.timelines[visTimeline]) {
+            this.timelines[visTimeline].zoomIn(zoomLevel);
+        } else {
+            throw new Error(this.doesNotExistError(visTimeline));
+        }
+    }
+
+    public zoomOut(visTimeline: string, zoomLevel: number, options?: VisTimelineOptions): void {
+        if (this.timelines[visTimeline]) {
+            this.timelines[visTimeline].zoomOut(zoomLevel);
+        } else {
+            throw new Error(this.doesNotExistError(visTimeline));
+        }
+    }
+
     /**
      * Adjust the visible window such that it fits all items.
      * See also function focus(id).
