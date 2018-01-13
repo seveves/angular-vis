@@ -8,7 +8,8 @@ import {
     VisTimelineFitOptions,
     VisTimelineGroups,
     VisTimelineItems,
-    VisTimelineOptions } from './index';
+    VisTimelineOptions,
+} from './index';
 
 /**
  * A service to create, manage and control VisTimeline instances.
@@ -129,7 +130,7 @@ export class VisTimelineService {
      */
     public timechanged: EventEmitter<any> = new EventEmitter<any>();
 
-    private timelines: {[id: string]: VisTimeline} = {};
+    private timelines: { [id: string]: VisTimeline } = {};
 
     /**
      * Creates a new timeline instance.
@@ -198,6 +199,60 @@ export class VisTimelineService {
     public addCustomTime(visTimeline: string, time: VisDate, id?: VisId): VisId {
         if (this.timelines[visTimeline]) {
             return this.timelines[visTimeline].addCustomTime(time, id);
+        } else {
+            throw new Error(this.doesNotExistError(visTimeline));
+        }
+    }
+
+    /**
+     * Zoom in the window such that given time is centered on screen.
+     * @param {string} visTimeline the time name/identifier
+     * @param {number} zoomLevel percentage - must be between [0..1]
+     *
+     * @throws {Error} Thrown when timeline does not exist.
+     *
+     * @memberOf VisTimelineService
+     */
+    public zoomIn(visTimeline: string, zoomLevel: number): void {
+        if (this.timelines[visTimeline]) {
+            if (!zoomLevel || zoomLevel < 0 || zoomLevel > 1) { return; }
+
+            const tl = this.timelines[visTimeline];
+            const range = tl.getWindow();
+            const start = range.start.valueOf();
+            const end = range.end.valueOf();
+            const interval = end - start;
+            const newInterval = interval / (1 + zoomLevel);
+            const distance = (interval - newInterval) / 2;
+            const newStart = start + distance;
+            const newEnd = end - distance;
+            tl.setWindow(newStart, newEnd);
+
+        } else {
+            throw new Error(this.doesNotExistError(visTimeline));
+        }
+    }
+
+    /**
+     *  Zoom out the window such that given time is centered on screen.
+     * @param string} visTimeline the time name/identifier
+     * @param {number} zoomLevel percentage - must be between [0..1]
+     *
+     * @throws {Error} Thrown when timeline does not exist.
+     *
+     * @memberOf VisTimelineService
+     */
+    public zoomOut(visTimeline: string, zoomLevel: number, options?: VisTimelineOptions): void {
+        if (this.timelines[visTimeline]) {
+            const tl = this.timelines[visTimeline];
+            const range = tl.getWindow();
+            const start = range.start.valueOf();
+            const end = range.end.valueOf();
+            const interval = end - start;
+            const newStart = start - interval * zoomLevel / 2;
+            const newEnd = end + interval * zoomLevel / 2;
+            tl.setWindow(newStart, newEnd);
+
         } else {
             throw new Error(this.doesNotExistError(visTimeline));
         }
@@ -678,7 +733,7 @@ export class VisTimelineService {
      */
     public on(visTimeline: string, eventName: VisTimelineEvents, preventDefault?: boolean): boolean {
         if (this.timelines[visTimeline]) {
-            const that: {[index: string]: any} = this;
+            const that: { [index: string]: any } = this;
             this.timelines[visTimeline].on(eventName, (params: any) => {
                 const emitter = that[eventName] as EventEmitter<any>;
                 if (emitter) {

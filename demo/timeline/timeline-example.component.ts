@@ -10,7 +10,9 @@ import { VisTimelineService, VisTimelineItems } from '../../components/timeline'
       <div [visTimeline]="visTimeline"
            [visTimelineItems]="visTimelineItems"
            (initialized)="timelineInitialized()"></div>
-      <button type="button" class="btn btn-default" (click)="addItem()">Add and focus</button>
+           <button type="button" class="btn btn-default" (click)="addItem()">Add and focus</button>
+      <button type="button" class="btn btn-default" (click)="zoomIn()">Zoom In</button>
+      <button type="button" class="btn btn-default" (click)="zoomOut()">Zoom Out</button>
       <p>
         <strong>Note:</strong> Open your dev tools to see the console output when the timeline receives click events.
       </p>
@@ -44,6 +46,14 @@ export class VisTimelineExampleComponent implements OnInit, OnDestroy {
             {id: newLength, content: 'item ' + newLength, start: Date.now() }
         );
         this.visTimelineService.focusOnIds(this.visTimeline, [1, newLength]);
+    }
+
+    public zoomOut(): void {
+        this.visTimelineService.zoomOut(this.visTimeline, 0.5);
+    }
+
+    public zoomIn(): void {
+        this.visTimelineService.zoomIn(this.visTimeline, 0.5);
     }
 
     public ngOnInit(): void {
