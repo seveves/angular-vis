@@ -8,7 +8,8 @@ import {
     VisTimelineFitOptions,
     VisTimelineGroups,
     VisTimelineItems,
-    VisTimelineOptions } from './index';
+    VisTimelineOptions
+} from './index';
 
 /**
  * A service to create, manage and control VisTimeline instances.
@@ -129,7 +130,7 @@ export class VisTimelineService {
      */
     public timechanged: EventEmitter<any> = new EventEmitter<any>();
 
-    private timelines: {[id: string]: VisTimeline} = {};
+    private timelines: { [id: string]: VisTimeline } = {};
 
     /**
      * Creates a new timeline instance.
@@ -205,19 +206,39 @@ export class VisTimelineService {
 
     public zoomIn(visTimeline: string, zoomLevel: number, options?: VisTimelineOptions): void {
         if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].zoomIn(zoomLevel);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+            if (!zoomLevel || zoomLevel < 0 || zoomLevel > 1) return;
+
+            const tl = this.timelines[visTimeline];
+            const range = tl.getWindow();
+            const start = range.start.valueOf();
+            const end = range.end.valueOf();
+            const interval = end - start;
+            const newInterval = interval / (1 + zoomLevel);
+            const distance = (interval - newInterval) / 2;
+            const newStart = start + distance;
+            const newEnd = end - distance;
+            tl.setWindow(newStart, newEnd);
+
+    } else {
+    throw new Error(this.doesNotExistError(visTimeline));
+}
     }
 
-    public zoomOut(visTimeline: string, zoomLevel: number, options?: VisTimelineOptions): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].zoomOut(zoomLevel);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    public zoomOut(visTimeline: string, zoomLevel: number, options ?: VisTimelineOptions): void {
+    if(this.timelines[visTimeline]) {
+        const tl = this.timelines[visTimeline];
+        const range = tl.getWindow();
+        const start = range.start.valueOf();
+        const end = range.end.valueOf();
+        const interval = end - start;
+        const newStart = start - interval * zoomLevel / 2;
+        const newEnd = end + interval * zoomLevel / 2;
+        tl.setWindow(newStart, newEnd);
+
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Adjust the visible window such that it fits all items.
@@ -230,13 +251,13 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public fit(visTimeline: string, options?: VisTimelineFitOptions): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].fit(options);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    public fit(visTimeline: string, options ?: VisTimelineFitOptions): void {
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].fit(options);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Adjust the visible window such that the selected item is centered on screen.
@@ -249,13 +270,13 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public focusOnId(visTimeline: string, id: VisId, options?: VisTimelineFitOptions): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].focus(id, options);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    public focusOnId(visTimeline: string, id: VisId, options ?: VisTimelineFitOptions): void {
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].focus(id, options);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Adjust the visible window such that the selected items are centered on screen.
@@ -268,13 +289,13 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public focusOnIds(visTimeline: string, ids: VisId[], options?: VisTimelineFitOptions): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].focus(ids, options);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    public focusOnIds(visTimeline: string, ids: VisId[], options ?: VisTimelineFitOptions): void {
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].focus(ids, options);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Get the current time.
@@ -288,12 +309,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public getCurrentTime(visTimeline: string): Date {
-        if (this.timelines[visTimeline]) {
-            return this.timelines[visTimeline].getCurrentTime();
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if (this.timelines[visTimeline]) {
+        return this.timelines[visTimeline].getCurrentTime();
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Retrieve the custom time from the custom time bar with given id.
@@ -307,13 +328,13 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public getCustomTime(visTimeline: string, id?: VisId): Date {
-        if (this.timelines[visTimeline]) {
-            return this.timelines[visTimeline].getCustomTime(id);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    public getCustomTime(visTimeline: string, id ?: VisId): Date {
+    if (this.timelines[visTimeline]) {
+        return this.timelines[visTimeline].getCustomTime(id);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Returns an Object with relevant properties from an event.
@@ -327,12 +348,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public getEventProperties(visTimeline: string, event: Event): VisTimelineEventPropertiesResult {
-        if (this.timelines[visTimeline]) {
-            return this.timelines[visTimeline].getEventProperties(event);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if (this.timelines[visTimeline]) {
+        return this.timelines[visTimeline].getEventProperties(event);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Get the range of all the items as an object containing min: Date and max: Date.
@@ -345,12 +366,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public getItemRange(visTimeline: string): { min: Date, max: Date } {
-        if (this.timelines[visTimeline]) {
-            return this.timelines[visTimeline].getItemRange();
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if (this.timelines[visTimeline]) {
+        return this.timelines[visTimeline].getItemRange();
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Get an array with the ids of the currently selected items.
@@ -363,12 +384,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public getSelection(visTimeline: string): VisId[] {
-        if (this.timelines[visTimeline]) {
-            return this.timelines[visTimeline].getSelection();
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if (this.timelines[visTimeline]) {
+        return this.timelines[visTimeline].getSelection();
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Get an array with the ids of the currently visible items.
@@ -381,12 +402,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public getVisibleItems(visTimeline: string): VisId[] {
-        if (this.timelines[visTimeline]) {
-            return this.timelines[visTimeline].getVisibleItems();
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if (this.timelines[visTimeline]) {
+        return this.timelines[visTimeline].getVisibleItems();
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Get the current visible window.
@@ -399,12 +420,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public getWindow(visTimeline: string): { start: Date, end: Date } {
-        if (this.timelines[visTimeline]) {
-            return this.timelines[visTimeline].getWindow();
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if (this.timelines[visTimeline]) {
+        return this.timelines[visTimeline].getWindow();
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * 	Move the window such that given time is centered on screen.
@@ -417,13 +438,13 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public moveTo(visTimeline: string, time: VisDate, options?: VisTimelineFitOptions): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].moveTo(time, options);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    public moveTo(visTimeline: string, time: VisDate, options ?: VisTimelineFitOptions): void {
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].moveTo(time, options);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Force a redraw of the Timeline.
@@ -438,12 +459,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public redraw(visTimeline: string): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].redraw();
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].redraw();
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Remove vertical bars previously added to the timeline via addCustomTime method.
@@ -456,12 +477,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public removeCustomTime(visTimeline: string, id: VisId): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].removeCustomTime(id);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].removeCustomTime(id);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Set a current time.
@@ -477,12 +498,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public setCurrentTime(visTimeline: string, time: VisDate): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].setCurrentTime(time);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].setCurrentTime(time);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * 	Adjust the time of a custom time bar.
@@ -495,13 +516,13 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public setCustomTime(visTimeline: string, time: VisDate, id?: VisId): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].setCustomTime(time, id);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    public setCustomTime(visTimeline: string, time: VisDate, id ?: VisId): void {
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].setCustomTime(time, id);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Adjust the title attribute of a custom time bar.
@@ -515,13 +536,13 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public setCustomTimeTitle(visTimeline: string, title: string, id?: VisId): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].setCustomTimeTitle(title, id);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    public setCustomTimeTitle(visTimeline: string, title: string, id ?: VisId): void {
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].setCustomTimeTitle(title, id);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Set both groups and items at once.
@@ -540,12 +561,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public setData(visTimeline: string, data: { groups?: VisTimelineGroups; items?: VisTimelineItems }): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].setData(data);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].setData(data);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Set a data set with groups for the Timeline.
@@ -560,12 +581,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public setGroups(visTimeline: string, groups: VisTimelineGroups): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].setGroups(groups);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].setGroups(groups);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Set a data set with items for the Timeline.
@@ -578,12 +599,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public setItems(visTimeline: string, items: VisTimelineItems): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].setItems(items);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].setItems(items);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Set or update options.
@@ -598,12 +619,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public setOptions(visTimeline: string, options: VisTimelineOptions): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].setOptions(options);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].setOptions(options);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Select one item by its id.#
@@ -617,12 +638,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public setSelectionToId(visTimeline: string, id: VisId): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].setSelection(id);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].setSelection(id);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Select multiple items by their id.
@@ -637,12 +658,12 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public setSelectionToIds(visTimeline: string, ids: VisId[]): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].setSelection(ids);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].setSelection(ids);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Set the current visible window.
@@ -658,13 +679,13 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public setWindow(visTimeline: string, start: VisDate, end: VisDate, options?: VisTimelineFitOptions): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].setWindow(start, end, options);
-        } else {
-            throw new Error(this.doesNotExistError(visTimeline));
-        }
+    public setWindow(visTimeline: string, start: VisDate, end: VisDate, options ?: VisTimelineFitOptions): void {
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].setWindow(start, end, options);
+    } else {
+        throw new Error(this.doesNotExistError(visTimeline));
     }
+}
 
     /**
      * Destroy the Timeline.
@@ -676,11 +697,11 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public destroy(visTimeline: string): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].destroy();
-            delete this.timelines[visTimeline];
-        }
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].destroy();
+        delete this.timelines[visTimeline];
     }
+}
 
     /**
      * Activates an event.
@@ -692,24 +713,24 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public on(visTimeline: string, eventName: VisTimelineEvents, preventDefault?: boolean): boolean {
-        if (this.timelines[visTimeline]) {
-            const that: {[index: string]: any} = this;
-            this.timelines[visTimeline].on(eventName, (params: any) => {
-                const emitter = that[eventName] as EventEmitter<any>;
-                if (emitter) {
-                    emitter.emit(params ? [visTimeline].concat(params) : visTimeline);
-                }
-                if (preventDefault && params.event) {
-                    params.event.preventDefault();
-                }
-            });
+    public on(visTimeline: string, eventName: VisTimelineEvents, preventDefault ?: boolean): boolean {
+    if (this.timelines[visTimeline]) {
+        const that: { [index: string]: any } = this;
+        this.timelines[visTimeline].on(eventName, (params: any) => {
+            const emitter = that[eventName] as EventEmitter<any>;
+            if (emitter) {
+                emitter.emit(params ? [visTimeline].concat(params) : visTimeline);
+            }
+            if (preventDefault && params.event) {
+                params.event.preventDefault();
+            }
+        });
 
-            return true;
-        }
-
-        return false;
+        return true;
     }
+
+    return false;
+}
 
     /**
      * Deactivates an event.
@@ -720,16 +741,16 @@ export class VisTimelineService {
      * @memberOf VisTimelineService
      */
     public off(visTimeline: string, eventName: VisTimelineEvents): void {
-        if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].off(eventName, undefined);
-        }
+    if(this.timelines[visTimeline]) {
+        this.timelines[visTimeline].off(eventName, undefined);
     }
+}
 
     private doesNotExistError(visTimeline: string): string {
-        return `Timeline with id ${visTimeline} does not exist.`;
-    }
+    return `Timeline with id ${visTimeline} does not exist.`;
+}
 
     private alreadyExistsError(visTimeline: string): string {
-        return `Timeline with id ${visTimeline} already exists.`;
-    }
+    return `Timeline with id ${visTimeline} already exists.`;
+}
 }
