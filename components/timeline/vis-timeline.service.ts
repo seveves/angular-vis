@@ -215,7 +215,19 @@ export class VisTimelineService {
      */
     public zoomIn(visTimeline: string, zoomLevel: number): void {
         if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].zoomIn(zoomLevel);
+            if (!zoomLevel || zoomLevel < 0 || zoomLevel > 1) { return; }
+
+            const tl = this.timelines[visTimeline];
+            const range = tl.getWindow();
+            const start = range.start.valueOf();
+            const end = range.end.valueOf();
+            const interval = end - start;
+            const newInterval = interval / (1 + zoomLevel);
+            const distance = (interval - newInterval) / 2;
+            const newStart = start + distance;
+            const newEnd = end - distance;
+            tl.setWindow(newStart, newEnd);
+
         } else {
             throw new Error(this.doesNotExistError(visTimeline));
         }
@@ -230,9 +242,17 @@ export class VisTimelineService {
      *
      * @memberOf VisTimelineService
      */
-    public zoomOut(visTimeline: string, zoomLevel: number): void {
+    public zoomOut(visTimeline: string, zoomLevel: number, options?: VisTimelineOptions): void {
         if (this.timelines[visTimeline]) {
-            this.timelines[visTimeline].zoomOut(zoomLevel);
+            const tl = this.timelines[visTimeline];
+            const range = tl.getWindow();
+            const start = range.start.valueOf();
+            const end = range.end.valueOf();
+            const interval = end - start;
+            const newStart = start - interval * zoomLevel / 2;
+            const newEnd = end + interval * zoomLevel / 2;
+            tl.setWindow(newStart, newEnd);
+
         } else {
             throw new Error(this.doesNotExistError(visTimeline));
         }
