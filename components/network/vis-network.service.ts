@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
-
+import * as vis from "vis";
+import { VisMoveToOptions } from '..';
 import {
   VisClusterOptions,
   VisEdgeOptions,
@@ -11,7 +12,8 @@ import {
   VisNetworkOptions,
   VisNodeOptions,
   VisOpenClusterOptions,
-  VisPosition } from './index';
+  VisPosition,
+} from './index';
 
 /**
  * A service to create, manage and control VisNetwork instances.
@@ -293,7 +295,7 @@ export class VisNetworkService {
    */
   public configChange: EventEmitter<any> = new EventEmitter<any>();
 
-  private networks: {[id: string]: VisNetwork} = {};
+  private networks: { [id: string]: VisNetwork } = {};
 
   /**
    * Creates a new network instance.
@@ -345,7 +347,9 @@ export class VisNetworkService {
    */
   public on(visNetwork: string, eventName: VisNetworkEvents, preventDefault?: boolean): boolean {
     if (this.networks[visNetwork]) {
-      const that: {[index: string]: any} = this;
+      /* tslint:disable */
+      const that: { [index: string]: any } = this;
+      /* tslint:enable */
       this.networks[visNetwork].on(eventName, (params: any) => {
         const emitter = that[eventName] as EventEmitter<any>;
         if (emitter) {
@@ -388,7 +392,9 @@ export class VisNetworkService {
    */
   public once(visNetwork: string, eventName: VisNetworkEvents): boolean {
     if (this.networks[visNetwork]) {
-      const that: {[index: string]: any} = this;
+      /* tslint:disable */
+      const that: { [index: string]: any } = this;
+      /* tslint:disable */
       this.networks[visNetwork].on(eventName, (params: any) => {
         const emitter = that[eventName] as EventEmitter<any>;
         if (emitter) {
@@ -916,5 +922,102 @@ export class VisNetworkService {
    */
   public DOMtoCanvas(visNetwork: string, position: vis.Position) {
     return this.networks[visNetwork].DOMtoCanvas(position);
+  }
+
+  /**
+   * This function looks up the node at the given DOM coordinates on the canvas.
+   * Input and output are in the form of {x:Number,y:Number}.
+   * The DOM values are relative to the network container -> DOM not Canvas coords.
+   *
+   * @param {string} visNetwork The network name/identifier.
+   * @param {Position} position The DOM position.
+   * @returns {VisId} nodeId The associated node id.
+   *
+   * @memberOf VisNetworkService
+   */
+  public getNodeAt(visNetwork: string, position: vis.Position) {
+    return this.networks[visNetwork].getNodeAt(position);
+  }
+
+  /**
+ * This function looks up the edge at the given DOM coordinates on the canvas.
+ * Input and output are in the form of {x:Number,y:Number}.
+ * The DOM values are relative to the network container -> DOM not Canvas coords.
+ *
+ * @param {string} visNetwork The network name/identifier.
+ * @param {Position} position The DOM position.
+ * @returns {VisId} edgeId The associated edge id.
+ *
+ * @memberOf VisNetworkService
+ */
+  public getEdgeAt(visNetwork: string, position: vis.Position) {
+    return this.networks[visNetwork].getEdgeAt(position);
+  }
+
+  /**
+* This function looks up the edges for a given nodeId.
+* The DOM values are relative to the network container -> DOM not Canvas coords.
+*
+* @param {string} visNetwork The network name/identifier.
+* @param {VisId} nodeId The associated node id.
+* @returns {VisId[]} Return array of edge ids
+*
+* @memberOf VisNetworkService
+*/
+  public getConnectedEdges(visNetwork: string, nodeId: vis.IdType) {
+    return this.networks[visNetwork].getConnectedEdges(nodeId);
+  }
+
+  /**
+ * Returns an array of nodeIds of the all the nodes that are directly connected to this node.
+ * If you supply an edgeId, vis will first match the id to nodes.
+ * If no match is found, it will search in the edgelist and return an array: [fromId, toId].
+ *
+ * @param {string} visNetwork The network name/identifier.
+ * @param nodeOrEdgeId a node or edge id
+ * @returns {VisId[]} Return array of node ids
+ */
+  public getConnectedNodes(visNetwork: string, nodeOrEdgeId: vis.IdType) {
+    return this.networks[visNetwork].getConnectedNodes(nodeOrEdgeId);
+  }
+
+  /**
+   * Returns the positions of the nodes.
+   * @param {string} visNetwork The network name/identifier.
+   * @param {Array.<Node.id>|String} [ids]  --> optional, can be array of nodeIds, can be string
+   * @returns {{}}
+   */
+  public getPositions(visNetwork: string, nodeIds: VisId[]) {
+    return this.networks[visNetwork].getPositions(nodeIds);
+  }
+
+  /**
+   * You can animate or move the camera using the moveTo method.
+   *
+   * @param {string} visNetwork The network name/identifier.
+   * @param {VisFocusOptions} options Options for moveTo function.
+   */
+  public moveTo(visNetwork: string, moveToOptions: VisMoveToOptions) {
+    return this.networks[visNetwork].moveTo(moveToOptions);
+  }
+
+  /**
+   * Start the physics simulation.
+   * This is normally done whenever needed and is only really useful
+   * if you stop the simulation yourself and wish to continue it afterwards.
+   * @param {string} visNetwork The network name/identifier.
+   */
+  public startSimulation(visNetwork: string) {
+    return this.networks[visNetwork].startSimulation();
+  }
+
+  /**
+   * This stops the physics simulation and triggers a stabilized event.
+   * Tt can be restarted by dragging a node,
+   * altering the dataset or calling startSimulation().
+   * @param {string} visNetwork The network name/identifier.
+   */
+  public stopSimulation(visNetwork: string) {
+    return this.networks[visNetwork].stopSimulation();
   }
 }
